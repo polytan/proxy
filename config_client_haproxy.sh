@@ -10,7 +10,9 @@ ENABLED=1
 #EXTRAOPTS="-de -m 16"
 EOF
 
-cat >/etc/haproxy/haproxy.conf <<EOF
+mkdir -p /run/haproxy
+chown -R haproxy:haproxy /run/haproxy
+cat >/etc/haproxy/haproxy.cfg <<EOF
 global
         log /dev/log    local0
         log /dev/log    local1 notice
@@ -31,6 +33,8 @@ defaults
         srvtimeout 50000
 
 listen stats *:1936
+    mode http
+    option httplog
     stats enable
     stats uri /
     stats hide-version
@@ -38,17 +42,14 @@ listen stats *:1936
 
 frontend shadowsocks
     bind 127.0.0.1:8889
-    mode tcp
-    option tcplog
     maxconn 102400
     default_backend shadowsocks_backend
 
 backend shadowsocks_backend
-    mode tcp
     balance leastconn
-    server web01 <server1>:8889 check inter 61000 rise 2 fall 2
-    server web02 <server2>:8889 check inter 61000 rise 2 fall 2
-    server web03 <server3>:8889 check inter 61000 rise 2 fall 2
+    server web01 45.32.61.85:8889 check inter 61000 rise 2 fall 2
+    server web02 45.32.32.52:8889 check inter 61000 rise 2 fall 2
+    server web03 45.32.57.214:8889 check inter 61000 rise 2 fall 2
 EOF
 service haproxy restart
 
