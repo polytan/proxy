@@ -2,10 +2,11 @@
 
 echo "generate #G#F#W# whitelist/blacklist"
 python list2regex.py
+cp other.url_regex.lst cn.url_regex.lst /etc/squid/
 cp other.url_regex.lst cn.url_regex.lst /etc/squid3/
 
 echo "configure/run squid3"
-cat >/etc/squid3/squid.conf <<EOF
+cat >squid.conf <<EOF
 http_port 3128
 access_log /var/log/squid3/access.log squid
 hosts_file /etc/hosts
@@ -122,7 +123,11 @@ max_filedescriptors 181920
 reply_header_max_size 6400 KB
 chunked_request_body_max_size 0 KB
 #vary_ignore_expire on
-
 EOF
 
+cp squid.conf /etc/squid3/
+cp squid.conf /etc/squid/
+
+service squid3 restart || true
+service squid restart || true
 
